@@ -776,3 +776,108 @@ role：角色校验
 是的，你还是没有看错，就是这么速度，现在只要你在页面的任何位置引入这个标签就能取出学生成绩最高的3位学生姓名
 需注意：当需要传参时 ，例：<@api target="studentTag" id="1">
 然后在代码里：Integer id = getInt(params, "id"); 即可！
+
+## 五. 部分接口说明
+
+### 1.文件上传
+
+>通用七牛云单文件上传
+
+请求方式
+
+- 请求方式：POST
+- 请求地址：/file/commonUploadFile
+
+**入参**
+
+| 序号 | 参数名 | 说明 | 必含 | 类型 |
+|-----|-----|-----|-----|-----|
+|1|file|上传时的表单name值|是|MultipartFile|
+
+**出参**
+
+| 序号 | 参数名 | 说明 | 必含 | 类型 |
+|-----|-----|-----|-----|-----|
+|1|status|成功时为200，失败为101|是|String|
+|2|message|成功时为null，失败时为失败信息|是|String|
+|3|src|成功时为文件绝对地址，失败时为null|是|String|
+
+>通用七牛云多文件上传
+
+请求方式
+
+- 请求方式：POST
+- 请求地址：/file/commonUploadFiles
+
+| 序号 | 参数名 | 说明 | 必含 | 类型 |
+|-----|-----|-----|-----|-----|
+|1|files|上传时的表单name值|是|MultipartFile[]|
+
+**出参**
+
+| 序号 | 参数名 | 说明 | 必含 | 类型 |
+|-----|-----|-----|-----|-----|
+|1|status|成功时为200，失败为101|是|String|
+|2|message|成功时为null，失败时为失败信息|是|String|
+|3|data|成功时为文件绝对地址数组，失败时为null|是|String[]|
+
+### 2.邮件发送
+
+    @Autowired
+    private IMailService mailService;
+
+
+     try {
+                sendOk = mailService.sendHtmlMail(email, title, content);
+            } catch (Exception e) {
+                return APPUtil.returnMap("101", e.getMessage());
+            }
+
+      email:email地址
+      title:邮件标题
+      content:邮件内容（可以为HTML内容）
+
+### 3.验证码短信发送
+
+>发送验证码
+
+请求方式
+
+- 请求方式：POST
+- 请求地址：/alidayu/commonSendSign
+
+**入参**
+
+| 序号 | 参数名 | 说明 | 必含 | 类型 |
+|-----|-----|-----|-----|-----|
+|1|phone|手机号码|是|String|
+
+**出参**
+
+| 序号 | 参数名 | 说明 | 必含 | 类型 |
+|-----|-----|-----|-----|-----|
+|1|status|成功时为200,失败为101|是|String|
+|2|KST|token值|否|String|
+|2|message|接口信息|是|String|
+
+>验证码验证
+
+请求方式
+
+- 请求方式：POST
+- 请求地址：/alidayu/isSignOk
+
+**入参**
+
+| 序号 | 参数名 | 说明 | 必含 | 类型 |
+|-----|-----|-----|-----|-----|
+|1|phone|手机号码|是|String|
+|2|kst|token值|是|String|
+|3|code|验证码|是|String|
+
+**出参**
+
+| 序号 | 参数名 | 说明 | 必含 | 类型 |
+|-----|-----|-----|-----|-----|
+|1|code|成功时为200,失败为101|是|String|
+|2|msg|成功为null,失败为失败信息|是|String|
