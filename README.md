@@ -881,3 +881,13 @@ role：角色校验
 |-----|-----|-----|-----|-----|
 |1|code|成功时为200,失败为101|是|String|
 |2|msg|成功为null,失败为失败信息|是|String|
+
+### 4.富文本
+
+     需注意图片上传要先配置好七牛云存储，否则无法图片上传
+     再需要富文本的页面，添加一下代码即可。
+     如果需要特殊定制请查看官方文档：http://www.wangeditor.com/
+     <div id="editor1">
+        <p>欢迎使用 <b>wangEditor</b> 富文本编辑器</p>
+     </div>
+     <#include "../common/editor.ftl">
