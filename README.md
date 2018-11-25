@@ -74,7 +74,7 @@ Quella是基于SSM+shiro+redis为基础框架开发的后台脚手架，集成�
 
 ![输入图片说明](images/1.png "在这里输入图片标题")
 
-注意:resoures 文件夹要作为Resources Root 文件夹。
+**注意:resoures 文件夹要作为Resources Root 文件夹。**
 
 ### 2.2 项目配置
 - 1. 修改jdbc.properties 文件，改为自己的数据库链接属性
@@ -171,7 +171,7 @@ Quella是基于SSM+shiro+redis为基础框架开发的后台脚手架，集成�
          }
 
 修改好了后运行这个方法，就会生成model、mapper接口，mybatis的xml文件，service接口，service接口的实现，controller
-然后去到xml文件把上面的二级缓存配置删除
+然后去到xml文件把上面的二级缓存配置**删除**
 
           <!-- 开启二级缓存 -->
          <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
@@ -891,3 +891,44 @@ role：角色校验
         <p>欢迎使用 <b>wangEditor</b> 富文本编辑器</p>
      </div>
      <#include "../common/editor.ftl">
+
+
+## 六. 更新说明
+
+### 2018年8月20日 (v1.0)
+
+> *完成了后台基本搭建,暂没集成任何第三方*
+
+- 主要框架SSM+Shiro+Redis
+- 权限管理采用的是RBAC思想
+- 密码采用MD5加盐加密
+- 使用Quartz做定时任务(暂时还没做分布式)
+
+
+### 2018年9月21日 (v1.1)
+
+> *集成一些基本的第三方服务*
+
+- 支付宝PC段支付与H5支付
+- 七牛云存储
+- 富文本
+- 邮件发送
+- 阿里云短信服务
+
+### 2018年10月10日 (v1.2)
+
+> *引入ElasticSearch*
+
+- 整合ElasticSearch作为全文检索方案
+- 日志框架log4j升级为log4j2
+- 修复在线用户显示问题
+
+### 2018年10月26日 (v1.3)
+
+> *完成一些功能组件并可以使用标签调用*
+
+- 图片播放器标签
+- 友情链接标签
+- 数据字典标签
+- 站点IP、PV统计
+- 实时控制台日志
