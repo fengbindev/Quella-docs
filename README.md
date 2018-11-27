@@ -17,6 +17,8 @@ Quella是基于SSM+shiro+redis为基础框架开发的后台脚手架，集成�
 - 第三方集成：集成一些业务所需要的第三方，迅速进行二次开发，无需再去对接第三方。
 - 功能组件标签调用：将一些常用组件，如图片播放器做成自定义标签。
 - 搜索：集成ElasticSearch做为分布式搜索引擎
+- 完美整合Redis作为Mybatis的二级缓存框架
+- 使用SpringAOP+自定义注解做Redis缓存（主要是解决Mybatis二级缓存脏读，可使用自定义注解完全代替mybatis二级缓存）
 - 定时任务分布式：使用xxl-job分布式任务调度平台做Quella的定时任务分布式的解决方案。（开发中）
 - mysql优化：使用mycat做mysql的分库分表和读写分离。（开发中）
 
@@ -723,7 +725,72 @@ role：角色校验
 
 是的，你没有看错，一套单表页面的CRUD就是如此简单快速，当你熟悉流程后，写这样一套单表页面的CRUD可能只需花不到半个小时的时间。
 
-## 四、 自定义标签
+## 四、 缓存使用
+Quella中用reids实现了多种缓存，有shiro权限缓存，mybatis二级缓存,自定义注解实现缓存，满足各种业务需求.
+
+### 1.启用mybatis二级缓存
+开启mybatis二级缓存有两种。
+
+1）直接在mapper接口上加上：@CacheNamespace(implementation = com.ssrs.core.cache.RedisMybatisCache.class )
+
+    /**
+     * <p>
+     *  Mapper 接口
+     * </p>
+     *
+     * @author ssrs
+     * @since 2018-11-18
+     */
+    @CacheNamespace(implementation = com.ssrs.core.cache.RedisMybatisCache.class )
+    public interface ArticleMapper extends BaseMapper<Article> {
+    }
+
+2） 在xml文件上 加上
+
+     <cache type="com.ssrs.core.cache.RedisMybatisCache"/>
+
+**启用mybatis二级缓存就会有数据脏读问题（为什么会有请自行百度）**
+
+我知道的解决方法：
+
+1）手动触发相关链接查询所有表清空缓存方式（随意写个空增删改方法调用下）
+
+2）单表（无连接查询），程序组装数据
+
+3）在xml的查询语句上强制刷新缓存（flushcache=true）
+
+### 2.启用注解缓存
+在考虑到mybatis的二级缓存会带来脏读问题，所以使用SpringAOP+自定注解来实现缓存，完美解决mybatis的二级缓存脏读问题
+
+> @RedisCache：添加缓存
+
+使用方式：@RedisCache(fieldKey = "getArticlePageByPage#{ #page }") //fidldKey使用了SPEL解析
+        /**
+         * 分页数据
+         * @param page
+         * @param limit
+         * @param title
+         * @param type
+         * @return
+         */
+        @RequestMapping(value = "getPageInfo" ,method = RequestMethod.POST)
+        @ResponseBody
+        //单page=1时fieldKey="getArticlePageByPage1",为每页都缓存起来,当发现缓存有这个数据的时候直接放回数据就不会在执行方法里面的语句了，没有就执行
+        @RedisCache(fieldKey = "getArticlePageByPage#{ #page }")
+        public Object getPageInfo(Integer page,Integer limit,String title,String type){......}
+
+> @RedisEvict：清除缓存
+
+使用方式：@RedisEvict(fieldKey = "getArticlePageByPage*") //*代表通配符
+
+     @RequestMapping(value = "update" ,method = RequestMethod.POST)
+     @ResponseBody
+     //当执行增删改方法时就加上这个注解，就会清除fieldKey="getArticlePageByPage1",fieldKey="getArticlePageByPage2"等等缓存数据
+     @RedisEvict(fieldKey = "getArticlePageByPage*")
+     public Object update(Article article){....}
+
+
+## 五、 自定义标签
 当页面需要多个地方需要引用同个模块，那么就可以使用自定义标签方法。
 可以更好的与页面代码解耦，减少代码量。好吧，我承认我就是懒。-_-!
 
@@ -777,7 +844,7 @@ role：角色校验
 需注意：当需要传参时 ，例：<@api target="studentTag" id="1">
 然后在代码里：Integer id = getInt(params, "id"); 即可！
 
-## 五. 部分接口说明
+## 六. 部分接口说明
 
 ### 1.文件上传
 
@@ -893,7 +960,7 @@ role：角色校验
      <#include "../common/editor.ftl">
 
 
-## 六. 更新说明
+## 七. 更新说明
 
 ### 2018年8月20日 (v1.0)
 
