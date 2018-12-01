@@ -97,6 +97,16 @@ Quella是基于SSM+shiro+redis为基础框架开发的后台脚手架，集成�
 登录成功后的界面为
 ![输入图片说明](images/2.png "在这里输入图片标题")
 
+需要注意的是我用的ElasticSearch为6.4.2 版本，es6.x版本使用的log4j2的2.11.1版本，而log4j2-2.11.1需要jdk9,但是我的环境是jdk1.8,所以tomcat启动会报
+
+```
+Unable to process Jar entry [META-INF/versions/9/module-info.class] from Jar [jar:file:/D:/IdeaProjects/quella/target/quella/WEB-INF/lib/log4j-api-2.11.1.jar!/] for annotations
+org.apache.tomcat.util.bcel.classfile.ClassFormatException: Invalid byte tag in constant pool: 19
+
+```
+但是不会影响使用。
+解决方法：1.降低es版本，2.提高jdk版本，3.在pom文件排除es的log4j2依赖，自己引入2.11一下版本
+
 
 ## 三、普通页面的CRUD
 在部署成功后，就开始真正的编码吧，如何在Quella上快速进行二次开发，当你跟着这个步骤做完，你会发现写一个业务的CRUD是如此简单、快速。
@@ -949,6 +959,27 @@ Quella中用reids实现了多种缓存，有shiro权限缓存，mybatis二级缓
 |1|code|成功时为200,失败为101|是|String|
 |2|msg|成功为null,失败为失败信息|是|String|
 
+
+这两个接口配合使用可以验证码发送相关业务。
+
+设置说明：
+
+在 /src/main/java/com/ssrs/util/sign/SignUtil 可以设置短信发送的频率，防止短信被别人恶意刷掉
+
+    public class SignUtil {
+        /**
+         * 修改短信条数
+         */
+        public static final int SIGN_ONE_MIN_SIZE = 1; // 1 分钟条数
+        public static final int SIGN_ONE_HOUR_SIZE = 4; // 1 小时条数
+        public static final int SIGN_ONE_DAY_SIZE = 8; // 1 天条数
+        //验证码有效时间
+        public static final int SIGN_ACTICE_TIME = 5; // 5 分钟内有效
+    }
+
+
+注意：**在网站设置中可以设置短信验证码的长度和有效时间***  默认有效时间为5分钟
+
 ### 4.富文本
 
      需注意图片上传要先配置好七牛云存储，否则无法图片上传
@@ -957,8 +988,10 @@ Quella中用reids实现了多种缓存，有shiro权限缓存，mybatis二级缓
      <div id="editor1">
         <p>欢迎使用 <b>wangEditor</b> 富文本编辑器</p>
      </div>
+     <textarea id="editorText" name="content"  hidden></textarea>
      <#include "../common/editor.ftl">
 
+注意：**<textarea id="editorText" name="content"  hidden></textarea> 中的name值为表单提交的name值，可以随意改变，value的内容则为富文本内容**
 
 ## 七. 更新说明
 
