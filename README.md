@@ -251,6 +251,8 @@ org.apache.tomcat.util.bcel.classfile.ClassFormatException: Invalid byte tag in 
         /**
          * 创建日期
          */
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
         private Date stuCreateTime;
     }
 
@@ -724,8 +726,6 @@ role：角色校验
     /link/index=kickout,simple,login,permission
     /dictionary/index=kickout,simple,login,permission
     /catlinaLog/out=kickout,simple,login,permission
-    #加上这个
-    /student/**=kickout,simple,login,permission
 
 
     /**=kickout,simple,login
